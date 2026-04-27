@@ -1,98 +1,167 @@
 public class Main {
-    public static void main(String[] args) {
-        // Заполнение параметрами классов Триугольник, Круг, Прямоугольник
-        Shape circle = new Circle(7.0, "Желтый", "Красный");
-        Shape rectangle = new Rectangle(4.0, 7.0, "Зеленый", "Серый");
-        Shape triangle = new Triangle(3.0, 4.0, 5.0, "Синий", "Белый");
 
-        // Вывод методов информации класса Треугольник, Прямоуголник, Круг
-        circle.printInfo();
-        rectangle.printInfo();
-        triangle.printInfo();
+    // Метод для обработки массива 4x4
+    public static int processArray(String[][] array)
+            throws MyArraySizeException, MyArrayDataException {
 
-        System.out.println("ТЕСТ 1: Бег и плавание");
-        System.out.println("==================================\n");
-
-        // Создаём животных
-        Dog dogBobik = new Dog("Бобик");
-        Dog dogRex = new Dog("Рекс");
-        Cat catBarsik = new Cat("Барсик");
-        Cat catMurka = new Cat("Мурка");
-
-        // Тестируем бег
-        dogBobik.run(150);
-        dogRex.run(600);
-        catBarsik.run(150);
-        catMurka.run(250);
-
-        System.out.println();
-
-        // Тестируем плавание
-        dogBobik.swim(5);
-        dogRex.swim(15);
-        catBarsik.swim(5);
-        catMurka.swim(1);
-
-        // Статистика
-        System.out.println("\n Статистика созданных животных:");
-        System.out.println("Всего животных: " + Animal.getAnimalCount());
-        System.out.println("Собак: " + Animal.getDogCount());
-        System.out.println("Котов: " + Animal.getCatCount());
-
-        // ============================================
-        System.out.println("\n\n ТЕСТ 2: Коты и миска с едой");
-        System.out.println("==================================\n");
-
-        // Создаём миску (вместимость 50, начальная еда 30)
-        Bowl bowl = new Bowl(50, 30);
-        System.out.println(bowl + "\n");
-
-        // Создаём массив котов
-        Cat[] cats = {
-                new Cat("Барсик"),
-                new Cat("Мурка"),
-                new Cat("Рыжик"),
-                new Cat("Пушок"),
-                new Cat("Снежок")
-        };
-
-        // Просим всех котов покушать (каждому нужно 10 ед.)
-        System.out.println("🍴 Коты пытаются покушать (нужно 10 ед. каждому):\n");
-        for (Cat cat : cats) {
-            cat.eatFromBowl(bowl, 10);
+        // 1. Проверка размера массива
+        if (array == null) {
+            throw new MyArraySizeException("Массив равен null!");
         }
 
-        // Выводим состояние миски
-        System.out.println("\n" + bowl);
-
-        // Выводим статус сытости котов
-        System.out.println("\nСтатус сытости котов:");
-        for (Cat cat : cats) {
-            System.out.println(cat.getName() + ": " +
-                    (cat.isSatiated() ? "Сыт" : "Голоден"));
+        if (array.length != 4) {
+            throw new MyArraySizeException(
+                    "Неверное количество строк: " + array.length + " (ожидалось 4)"
+            );
         }
 
-        // Добавляем ещё еды и пробуем снова
-        System.out.println("\n Добавляем 25 ед. еды в миску:");
-        bowl.addFood(25);
-
-        System.out.println("\n Коты снова пытаются покушать:\n");
-        for (Cat cat : cats) {
-            if (!cat.isSatiated()) {  // только голодные коты
-                cat.eatFromBowl(bowl, 10);
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == null || array[i].length != 4) {
+                throw new MyArraySizeException(
+                        "Неверное количество столбцов в строке " + i + ": " +
+                                (array[i] == null ? 0 : array[i].length) + " (ожидалось 4)"
+                );
             }
         }
 
-        // Финальный статус
-        System.out.println("\n Финальный статус сытости:");
-        for (Cat cat : cats) {
-            System.out.println(cat.getName() + ": " +
-                    (cat.isSatiated() ? "Сыт" : "Голоден"));
+        // 2. Преобразование и суммирование
+        int sum = 0;
 
-            // Итоговая статистика
-            System.out.println("Всего животных: " + Animal.getAnimalCount());
-            System.out.println("Собак: " + Animal.getDogCount());
-            System.out.println("Котов: " + Animal.getCatCount());
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                try {
+                    int value = Integer.parseInt(array[i][j]);
+                    sum += value;
+                } catch (NumberFormatException e) {
+                    throw new MyArrayDataException(
+                            "Неверные данные в ячейке [" + i + "][" + j + "]: \"" +
+                                    array[i][j] + "\" не является числом",
+                            i, j, array[i][j]
+                    );
+                }
+            }
         }
+
+        return sum;
+    }
+
+    // Метод для демонстрации ArrayIndexOutOfBoundsException
+    public static void demonstrateArrayIndexOutOfBoundsException() {
+        System.out.println("\n Демонстрация ArrayIndexOutOfBoundsException:");
+        System.out.println("==============================================");
+
+        int[] numbers = {1, 2, 3, 4, 5};
+
+        try {
+            System.out.println("Попытка доступа к элементу с индексом 10...");
+            System.out.println("Значение: " + numbers[10]);  // Вызовет исключение
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Поймано исключение: " + e.getClass().getSimpleName());
+            System.out.println("Сообщение: " + e.getMessage());
+            System.out.println("Допустимые индексы: 0-" + (numbers.length - 1));
+        }
+    }
+
+    // Главный метод
+    public static void main(String[] args) {
+
+        System.out.println("Работа с двумерным массивом 4x4");
+        System.out.println("===================================\n");
+
+        // ===== ТЕСТ 1: Корректный массив =====
+        System.out.println("ТЕСТ 1: Корректный массив 4x4");
+        String[][] correctArray = {
+                {"1", "2", "3", "4"},
+                {"5", "6", "7", "8"},
+                {"9", "10", "11", "12"},
+                {"13", "14", "15", "16"}
+        };
+
+        try {
+            int sum = processArray(correctArray);
+            System.out.println("Сумма всех элементов: " + sum);
+            System.out.println("Ожидаемая сумма: 136 (1+2+...+16)");
+        } catch (MyArraySizeException | MyArrayDataException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        // ТЕСТ 2: Неправильный размер массива
+        System.out.println("\n ТЕСТ 2: Неправильный размер массива (3x4)");
+        String[][] wrongSizeArray = {
+                {"1", "2", "3", "4"},
+                {"5", "6", "7", "8"},
+                {"9", "10", "11", "12"}
+        };
+
+        try {
+            int sum = processArray(wrongSizeArray);
+            System.out.println("Сумма: " + sum);
+        } catch (MyArraySizeException e) {
+            System.out.println("Поймано MyArraySizeException:");
+            System.out.println("   " + e.getMessage());
+        } catch (MyArrayDataException e) {
+            System.out.println("Ошибка данных: " + e.getMessage());
+        }
+
+        // ТЕСТ 3: Некорректные данные в массиве
+        System.out.println("\n ТЕСТ 3: Некорректные данные в ячейке [1][2]");
+        String[][] wrongDataArray = {
+                {"1", "2", "3", "4"},
+                {"5", "6", "abc", "8"},  // "abc" вместо числа
+                {"9", "10", "11", "12"},
+                {"13", "14", "15", "16"}
+        };
+
+        try {
+            int sum = processArray(wrongDataArray);
+            System.out.println("Сумма: " + sum);
+        } catch (MyArraySizeException e) {
+            System.out.println("Ошибка размера: " + e.getMessage());
+        } catch (MyArrayDataException e) {
+            System.out.println("Поймано MyArrayDataException:");
+            System.out.println("   " + e.getMessage());
+            System.out.println("   Ячейка: [" + e.getRow() + "][" + e.getColumn() + "]");
+            System.out.println("   Неверное значение: \"" + e.getInvalidValue() + "\"");
+        }
+
+        // ТЕСТ 4: Массив с отрицательными числами (должен работать)
+        System.out.println("\n ТЕСТ 4: Массив с отрицательными числами");
+        String[][] negativeArray = {
+                {"-1", "-2", "-3", "-4"},
+                {"5", "6", "7", "8"},
+                {"9", "10", "-11", "12"},
+                {"13", "-14", "15", "16"}
+        };
+
+        try {
+            int sum = processArray(negativeArray);
+            System.out.println("Сумма: " + sum);
+        } catch (MyArraySizeException | MyArrayDataException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+
+        // ТЕСТ 5: Демонстрация ArrayIndexOutOfBoundsException
+        demonstrateArrayIndexOutOfBoundsException();
+
+        // ТЕСТ 6: Ещё один пример ArrayIndexOutOfBoundsException
+        System.out.println("\n Дополнительный пример ArrayIndexOutOfBoundsException:");
+        System.out.println("====================================================");
+
+        String[][] testArray = new String[4][4];
+
+        try {
+            System.out.println("Попытка доступа к testArray[5][3]...");
+            String value = testArray[5][3];  // Выход за границы
+            System.out.println("Значение: " + value);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Поймано исключение: " + e.getClass().getSimpleName());
+            System.out.println("Сообщение: " + e.getMessage());
+            System.out.println("Массив имеет размеры: 4x4 (индексы 0-3)");
+        }
+
+        // ИТОГ
+        System.out.println("\n ЗАВЕРШЕНИЕ ПРОГРАММЫ");
+        System.out.println("======================");
+        System.out.println("Все исключения обработаны корректно! ");
     }
 }
